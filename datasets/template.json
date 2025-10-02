@@ -32,7 +32,7 @@
     }
 },
 {
-    "utterance": "I like this product",
+    "utterance": "I like this product.",
     "Slots":
     {
         "intention": "express_preference",
@@ -44,7 +44,7 @@
     }
 },
 {
-    "utterance": "The system is too slow",
+    "utterance": "The system is too slow.",
     "Slots":
     {
         "intention": "complaint",
