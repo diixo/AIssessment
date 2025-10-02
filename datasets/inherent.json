@@ -1,0 +1,82 @@
+[
+  {
+    "Object": "Fire",
+    "Slots": { "Definition": { "inherent": "heat" } }
+  },
+  {
+    "Object": "Diamond",
+    "Slots": { "Definition": { "inherent": "hardness" } }
+  },
+  {
+    "Object": "Water",
+    "Slots": { "Definition": { "inherent": "fluidity" } }
+  },
+  {
+    "Object": "Human rights",
+    "Slots": { "Definition": { "inherent": "dignity" } }
+  },
+  {
+    "Object": "Gravity",
+    "Slots": { "Definition": { "inherent": "attraction" } }
+  },
+  {
+    "Object": "Sun",
+    "Slots": { "Definition": { "inherent": "brightness" } }
+  },
+  {
+    "Object": "Ice",
+    "Slots": { "Definition": { "inherent": "coldness" } }
+  },
+  {
+    "Object": "Steel",
+    "Slots": { "Definition": { "inherent": "strength" } }
+  },
+  {
+    "Object": "Wind",
+    "Slots": { "Definition": { "inherent": "movement" } }
+  },
+  {
+    "Object": "Salt",
+    "Slots": { "Definition": { "inherent": "salinity" } }
+  },
+  {
+    "Object": "Tree",
+    "Slots": { "Definition": { "inherent": "growth" } }
+  },
+  {
+    "Object": "Electricity",
+    "Slots": { "Definition": { "inherent": "energy" } }
+  },
+  {
+    "Object": "Gold",
+    "Slots": { "Definition": { "inherent": "malleability" } }
+  },
+  {
+    "Object": "Magnet",
+    "Slots": { "Definition": { "inherent": "magnetism" } }
+  },
+  {
+    "Object": "Sugar",
+    "Slots": { "Definition": { "inherent": "sweetness" } }
+  },
+  {
+    "Object": "Glass",
+    "Slots": { "Definition": { "inherent": "transparency" } }
+  },
+  {
+    "Object": "Sound",
+    "Slots": { "Definition": { "inherent": "vibration" } }
+  },
+  {
+    "Object": "Oil",
+    "Slots": { "Definition": { "inherent": "lubrication" } }
+  },
+  {
+    "Object": "Paper",
+    "Slots": { "Definition": { "inherent": "flexibility" } }
+  },
+  {
+    "Object": "Fireplace",
+    "Slots": { "Definition": { "inherent": "warmth" } }
+  }
+]
