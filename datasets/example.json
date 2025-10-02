@@ -1,0 +1,15 @@
+[
+{
+  "User": "What is this phone’s battery life?",
+  "Slots": { "intention": "interest", "Object": "phone" }
+},
+{
+  "User": "I like this phone, it looks great.",
+  "Slots": { "intention": "like", "Object": "phone" }
+},
+{
+  "User": "I prefer Samsung over iPhone.",
+  "Slots": { "intention": "preference", "Objects": ["Samsung", "iPhone"] }
+}
+]
+
