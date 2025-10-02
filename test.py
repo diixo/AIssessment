@@ -15,7 +15,8 @@ device = "cuda"
 # 0. Instantiate with any HF model you want
 model_name = "Qwen/Qwen2.5-0.5B-Instruct"
 # model_name = "microsoft/Phi-3.5-mini-instruct"
-# model_name = "meta-llama/Llama-3.2-1B-Instruct"
+#model_name = "./Llama-3.2-1B-Instruct"
+#model_name = "google/gemma-2b-it"
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name, dtype=torch.float32, device_map=device
@@ -30,16 +31,33 @@ tokenizer_info = xgr.TokenizerInfo.from_huggingface(tokenizer, vocab_size=full_v
 grammar_compiler = xgr.GrammarCompiler(tokenizer_info)
 compiled_grammar: xgr.CompiledGrammar = grammar_compiler.compile_builtin_json_grammar()
 
+role = """\nYour task is to analyze the input sentence and extract structured slots in JSON format.
+
+Slots you must always provide:
+- intention: the overall communicative goal (e.g. request, report, define_rule, express_preference, complaint, provide_info).
+- action: the main verb/action expressed (e.g. ask, influence, provide, contain, report, describe, approve, reject).
+- relation: the type of relationship between subject and object (e.g. contains, must_have, may_contain, not_allowed, allowed, depends_on, describes, causes).
+- subject: person or entity that performs or is responsible for the action.
+- object: person or entity or entities that the action is directed at.
+- emotion: the emotional tone if expressed (e.g. neutral, positive, negative, frustration, satisfaction).
+
+Output strictly in JSON."""
+
 # 2. Prepare inputs
 messages_list = []
 prompts = [
-    "Introduce yourself in JSON briefly as a student.",
+    #"Introduce yourself in JSON briefly as a student.",
+    #"The purpose of this document is to describe the process of conducting Work Product reviews.",
+    "I like this product.",
+    #"What is the delivery date?",
+    # "The system is too slow",
+
     # Uncomment for batch generation
     # "Introduce yourself in JSON as a professor.",
 ]
 for prompt in prompts:
     messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are an annotation extraction model." + role},
         {"role": "user", "content": prompt},
     ]
     messages_list.append(messages)
@@ -55,7 +73,8 @@ model_inputs = tokenizer(texts, return_tensors="pt").to(model.device)
 # 3. Instantiate logits_processor per each generate, and call generate()
 xgr_logits_processor = xgr.contrib.hf.LogitsProcessor(compiled_grammar)
 generated_ids = model.generate(
-    **model_inputs, max_new_tokens=512, logits_processor=[xgr_logits_processor]
+    **model_inputs, max_new_tokens=512, logits_processor=[xgr_logits_processor],
+    #do_sample=False,
 )
 
 # 4. Post-process outputs and print out response
@@ -64,5 +83,6 @@ generated_ids = [
     for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
 ]
 responses = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
-for response in responses:
-    print(response, end="\n\n")
+
+for idx, response in enumerate(responses):
+    print(prompts[idx]+"::\n", response, end="\n")
