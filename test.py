@@ -35,7 +35,7 @@ role = """\nYour task is to analyze the input sentence and extract structured sl
 
 Slots you must always provide:
 - intention: the overall communicative goal (e.g. request, report, define_rule, express_preference, complaint, provide_info).
-- action: the main verb/action expressed (e.g. ask, influence, provide, contain, report, describe, approve, reject).
+- action: the main verb/action expressed (e.g. attitude, ask, influence, provide, contain, report, describe, approve, reject).
 - relation: the type of relationship between subject and object (e.g. contains, must_have, may_contain, not_allowed, allowed, depends_on, describes, causes).
 - subject: person or entity that performs or is responsible for the action.
 - object: person or entity or entities that the action is directed at.
