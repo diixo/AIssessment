@@ -31,6 +31,24 @@ tokenizer_info = xgr.TokenizerInfo.from_huggingface(tokenizer, vocab_size=full_v
 grammar_compiler = xgr.GrammarCompiler(tokenizer_info)
 compiled_grammar: xgr.CompiledGrammar = grammar_compiler.compile_builtin_json_grammar()
 
+"""
+[
+{
+    "utterance": "Topic phrase",
+    "Slots":
+    {
+        "intention": "target: request, report, define, confirm, deny, prefer, etc.",
+        "action": "action: provide, contain, update, approve, reject, etc.",
+        "relation": "relation type between subject and object: contains, describes, depends_on, must_have, etc.",
+        "emotion": "emotional tone: neutral, like, dislike, frustration, satisfaction",
+        "subject": "object: person or entity or entities that the action is directed at.",
+        "object": "emotion: the emotional tone if expressed (e.g. neutral, positive, negative, frustration, satisfaction)"
+    }
+}
+]
+"""
+#########################################################################################################################
+
 role = """\nYour task is to analyze the input sentence and extract structured slots in JSON format.
 
 Slots you must always provide:
