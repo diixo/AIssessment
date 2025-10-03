@@ -1,11 +1,11 @@
 [
 {
-  "intention": "...",   // цель: request, report, define, confirm, deny, prefer, etc.
-  "action": "...",      // конкретное действие: provide, contain, update, approve, reject, etc.
-  "relation": "...",    // тип связи между субъектом и объектом: contains, describes, depends_on, must_have, etc.
-  "emotion": "...",     // эмоциональная окраска: neutral, like, dislike, frustration, satisfaction
-  "subject": "...",     // субъект (кто выполняет действие или носитель свойства)
-  "object": "..."       // объект (к чему направлено действие или что содержится в субъекте)
+  "intention": "target: request, report, define, confirm, deny, prefer, etc.",
+  "action": "action: provide, contain, update, approve, reject, etc.",
+  "relation": "relation type between subject and object: contains, describes, depends_on, must_have, etc.",
+  "emotion": "emotional tone: neutral, like, dislike, frustration, satisfaction",
+  "subject": "object: person or entity or entities that the action is directed at.",
+  "object": "emotion: the emotional tone if expressed (e.g. neutral, positive, negative, frustration, satisfaction)"
 },
 {
     "utterance": "Supplier Status Report shall contain Generic information",
