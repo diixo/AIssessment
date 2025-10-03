@@ -1,11 +1,15 @@
 [
 {
-  "intention": "target: request, report, define, confirm, deny, prefer, etc.",
-  "action": "action: provide, contain, update, approve, reject, etc.",
-  "relation": "relation type between subject and object: contains, describes, depends_on, must_have, etc.",
-  "emotion": "emotional tone: neutral, like, dislike, frustration, satisfaction",
-  "subject": "object: person or entity or entities that the action is directed at.",
-  "object": "emotion: the emotional tone if expressed (e.g. neutral, positive, negative, frustration, satisfaction)"
+    "utterance": "Topic phrase",
+    "Slots":
+    {
+        "intention": "target: request, report, define, confirm, deny, prefer, etc.",
+        "action": "action: provide, contain, update, approve, reject, etc.",
+        "relation": "relation type between subject and object: contains, describes, depends_on, must_have, etc.",
+        "emotion": "emotional tone: neutral, like, dislike, frustration, satisfaction",
+        "subject": "object: person or entity or entities that the action is directed at.",
+        "object": "emotion: the emotional tone if expressed (e.g. neutral, positive, negative, frustration, satisfaction)"
+    }
 },
 {
     "utterance": "Supplier Status Report shall contain Generic information",
