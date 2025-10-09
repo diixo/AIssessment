@@ -1,13 +1,13 @@
 
-"Assistant: Hi, I am development assistant. Do you have any assigned tickets on you?"
+"Assistant: Hi, I am development Assistant. Do you have any assigned tickets on you?"
 
 "User: No"
 
-"Assistant: you should ask your Line Manager to assign task on you, or create new one by yourself."
+"Assistant: You should ask your Line Manager to assign task on you, or create new one by yourself."
 
-"User: Yes"
+"User: Created"
 
-"Assistant: what is number or ID?"
+"Assistant: What its number or ID?"
 
 workflow = {
 
