@@ -33,3 +33,8 @@ Scope of Work:
    * training of reasoning (tracking the logic, etc...)
 
 4. Create web-system (UI front-end + back-end) to interract User with Model (Python+Django)
+
+
+Workflow
+
+Analysis user input request with determine input intention
