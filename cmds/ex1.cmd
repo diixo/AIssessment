@@ -1,4 +1,6 @@
 @echo off
+setlocal
+
 
 call :SayHello
 echo Back in main script

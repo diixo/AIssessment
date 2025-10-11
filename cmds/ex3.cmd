@@ -1,4 +1,3 @@
-
 @echo off
 setlocal
 
@@ -24,4 +23,3 @@ call :FuncA Hello
 call :FuncB World
 
 echo === finish MAIN ===
-goto :eof
