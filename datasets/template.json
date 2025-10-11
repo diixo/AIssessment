@@ -43,7 +43,7 @@
         "action": "like",
         "relation": "attitude",
         "emotion": "positive",
-        "subject": "User",
+        "subject": "Me",
         "object": "Product"
     }
 },
