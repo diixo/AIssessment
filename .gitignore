@@ -3,6 +3,8 @@ wandb/
 __py*
 __pycache__/*
 
+models/*
+
 
 *.py[codz]
 *$py.class

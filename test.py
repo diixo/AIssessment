@@ -13,10 +13,14 @@ device = "cuda"
 # device = "cpu"
 
 # 0. Instantiate with any HF model you want
-model_name = "Qwen/Qwen2.5-0.5B-Instruct"
+#model_name = "Qwen/Qwen2.5-0.5B-Instruct"
+model_name = "models/Qwen2.5-1.5B-Instruct"
+
 # model_name = "microsoft/Phi-3.5-mini-instruct"
 #model_name = "./Llama-3.2-1B-Instruct"
 #model_name = "google/gemma-2b-it"
+#model_name = "HuggingFaceTB/SmolLM3-3B"
+
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name, dtype=torch.float32, device_map=device
