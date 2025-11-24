@@ -48,6 +48,8 @@ def confluence(request):
     headingPick = "collapse"
     headingPull = "collapse"
     headingBuild = "collapse"
+    tested = ""
+    saved = ""
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -57,6 +59,7 @@ def confluence(request):
             pat = request.POST.get("pat_field", "")
             headingBackend = ""
             print(action, confluence_host, pat)
+            saved = "saved"
 
             raw_body, status = async_to_sync(make_post_request)(
                 url="http://127.0.0.1:8001/confluence/pat/save", data=
@@ -82,6 +85,7 @@ def confluence(request):
                     "root_page_id": None,
                 },
             )
+            tested = "OK" if status == 200 else "NOK"
             body = json.loads(raw_body)
             print(action, status, body)
 
@@ -117,6 +121,8 @@ def confluence(request):
         "headingPick": headingPick,
         "headingPull": headingPull,
         "headingBuild": headingBuild,
+        "tested": tested,
+        "saved": saved,
         })
 
 
