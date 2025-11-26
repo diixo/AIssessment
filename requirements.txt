@@ -3,11 +3,10 @@ tqdm==4.67.1
 tensorflow==2.14.0
 keras==2.14.0
 pandas==2.3.1
-datasets==3.6.0
 transformers==4.56.1
+datasets==3.6.0
 scikit-learn==1.6.1
 evaluate==0.4.6
-accelerate==1.10.1
 fastapi==0.116.1
 faiss-cpu==1.8.0
 streamlit==1.50.0
@@ -15,15 +14,21 @@ spacy==3.8.7
 scipy==1.15.1
 beautifulsoup4==4.12.2
 sentence-transformers==3.0.0
-pydantic==2.11.7
+pydantic==2.12.5
 uvicorn==0.35.0
-huggingface-hub==0.34.3
-vllm==0.11.0
-requests==2.32.4
-pydantic_settings==2.11.0
+requests==2.32.5
 websocket-client==1.8.0
-triton==3.4.0
-xgrammar==0.1.25
 
 Django==5.2.4
-aiohttp==3.12.14
+aiohttp==3.13.2
+
+pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu126
+
+huggingface-hub==0.36.0
+opencv-python-headless==4.11.0.86
+vllm==0.11.0
+triton==3.4.0
+pip install triton-windows==3.4.0.post20
+xgrammar==0.1.25
+accelerate==1.10.1
+pydantic_settings==2.12.0
