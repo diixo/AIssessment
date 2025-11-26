@@ -1,7 +1,7 @@
 import requests
 
 # === CONFIG ===
-PAT_TOKEN = "MzI1NTE3NzM1MzI1OgoIeZvMVNlinUEw7WYPuhsUlWrA1"  # replace with your Personal Access Token
+PAT_TOKEN = "XXX"  # replace with your Personal Access Token
 CONFLUENCE_BASE_URL = "https://luxproject.luxoft.com/confluence"  # your Confluence URL
 
 # === ENDPOINT ===
