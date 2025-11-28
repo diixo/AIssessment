@@ -61,13 +61,36 @@
                 <div class="row g-3">
                   <div class="col-12 col-md-4">
                     <label for="evalSpace" class="form-label">Space</label>
-                    <input type="text" name="eval_space_field" class="form-control" value="SWT1AQ" id="evalSpace">
+                    <input type="text" name="eval_space_field" class="form-control" value="{{ Current_Space }}" id="evalSpace">
                   </div>
                 </div>
 
                 <div class="mt-3 d-flex align-items-center gap-3">
                   <button type="submit" name="action" value="evaluate" class="btn btn-primary px2rem" id="evaluateBtn">Evaluate</button>
-                  <div class="small text-muted">Stage: <strong class="text-body">idle</strong> · Pages: 0 Added: 0 Changed: 0 Deleted: 0</div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluate threads status -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingStatus">
+            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEval" aria-expanded="false" aria-controls="collapseEval">
+              Status of Evaluation Threads
+            </button>
+          </h2>
+          <div id="collapseEval" class="accordion-collapse {{ headingStatus }}" aria-labelledby="headingStatus" data-bs-parent="#mainAccordion">
+            <div class="accordion-body">
+                <div class="row g-3">
+                  <div class="col-12 col-md-4">
+                    <label for="evalSpace" class="form-label">Space</label>
+                    <input type="text" name="status_space_field" class="form-control" value="{{ Current_Space }}" id="evalSpace">
+                  </div>
+                </div>
+
+                <div class="mt-3 d-flex align-items-center gap-3">
+                  <button type="submit" name="action" value="request_status" class="btn btn-primary px2rem" id="statusBtn">Get Status</button>
+                  <div class="small text-muted">Stage: <strong class="text-body">{{stage_status}}</strong> · Pages: 0 Added: 0 Changed: 0 Deleted: 0</div>
                 </div>
             </div>
           </div>

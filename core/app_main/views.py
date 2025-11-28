@@ -45,11 +45,14 @@ def chat_view(request):
 def confluence(request):
     headingBackend = "collapse"
     headingEval = "collapse"
+    headingStatus = "collapse"
     headingPick = "collapse"
     headingPull = "collapse"
     headingBuild = "collapse"
     tested = ""
     saved = ""
+    Current_Space = ""
+    stage_status = ""
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -90,12 +93,12 @@ def confluence(request):
             print(action, status, body)
 
         elif action == "evaluate":
-            headingEval = ""
-            eval_space = request.POST.get("eval_space_field", "SWT1AQ")
+            headingStatus = ""
+            Current_Space = request.POST.get("eval_space_field", "SWT1AQ")
             raw_body, status = async_to_sync(make_post_request)(
                 url="http://127.0.0.1:8001/confluence/evaluate", data=
                 {
-                    "space": eval_space,
+                    "space": Current_Space,
                     "root_page_id": "",
                     "workers": 8,
                 },
@@ -106,23 +109,48 @@ def confluence(request):
             # get response
             response, status = async_to_sync(make_get_request)(
                 url="http://127.0.0.1:8001/confluence/status",
-                params={"space": eval_space}
+                params={"space": Current_Space}
                 )
-            print("status_response:", json.loads(response))
+            response = json.loads(response)
+            stage_status = response.get("stage")
 
+        elif action == "request_status":
+            headingStatus = ""
+            Current_Space = request.POST.get("status_space_field", "SWT1AQ")
+
+            # get response
+            response, status = async_to_sync(make_get_request)(
+                url="http://127.0.0.1:8001/confluence/status",
+                params={"space": Current_Space}
+                )
+            response = json.loads(response)
+            stage_status = response.get("stage")
+            space_status = response.get("space")
+            plan_status = response.get("plan")
+            delta_status = response.get("delta")
+            print(64 * "*")
+            print("status_response:", response.keys())
+            print("space_status:", space_status)
+            print("stage_status:", stage_status)
+            print("plan_status:", plan_status.keys())
+            print("delta_status:", delta_status.keys())
         else:
             print("unknown action...")
+
 
     return render(request, "app_main/confluence.html", context={
         "title": "Confluence settings",
         "description": "Confluence",
         "headingBackend": headingBackend,
         "headingEval": headingEval,
+        "headingStatus": headingStatus,
         "headingPick": headingPick,
         "headingPull": headingPull,
         "headingBuild": headingBuild,
         "tested": tested,
         "saved": saved,
+        "Current_Space": Current_Space,
+        "stage_status": stage_status,
         })
 
 
