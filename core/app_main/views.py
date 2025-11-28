@@ -134,6 +134,28 @@ def confluence(request):
             print("stage_status:", stage_status)
             print("plan_status:", plan_status.keys())
             print("delta_status:", delta_status.keys())
+
+        elif action == "choose_pages":
+            headingPick = ""
+            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
+            print(action, Current_Space)
+
+            raw_body, status = async_to_sync(make_get_request)(
+                url="http://127.0.0.1:8001/confluence/tree/full",
+                params={"space": Current_Space}
+                )
+            body = json.loads(raw_body)
+            print("KEYS:", body.keys())
+            print("STATUS:", status)
+            print("OK:", body["ok"])
+            print("ROOT page_id:", body.get("root_page_id"))
+            print("NODES COUNT:", len(body.get("nodes", {})))
+
+            if status == 0:
+                return render(request, "app_main/confluence-tree.html", {
+                    "tree_json": json.dumps(body)
+                })
+
         else:
             print("unknown action...")
 
@@ -152,7 +174,9 @@ def confluence(request):
         "Current_Space": Current_Space,
         "stage_status": stage_status,
         })
-
+#tree_full space=SWT1AQ root=886960893 nodes=5767 size=548370B
+#Save
+#/confluence/selection request space=SWT1AQ include_ids=52 exclude_ids=0
 
 def ai_search(request):
     api = viix_api.get_api()

@@ -60,7 +60,7 @@
             <div class="accordion-body">
                 <div class="row g-3">
                   <div class="col-12 col-md-4">
-                    <label for="evalSpace" class="form-label">Space</label>
+                    <label for="evalSpace" class="form-label">Space:</label>
                     <input type="text" name="eval_space_field" class="form-control" value="{{ Current_Space }}" id="evalSpace">
                   </div>
                 </div>
@@ -83,7 +83,7 @@
             <div class="accordion-body">
                 <div class="row g-3">
                   <div class="col-12 col-md-4">
-                    <label for="evalSpace" class="form-label">Space</label>
+                    <label for="evalSpace" class="form-label">Space:</label>
                     <input type="text" name="status_space_field" class="form-control" value="{{ Current_Space }}" id="evalSpace">
                   </div>
                 </div>
@@ -108,13 +108,14 @@
 
                 <div class="row g-3">
                   <div class="col-12 col-md-4">
-                    <label for="pickSpace" class="form-label">Space</label>
-                    <input type="text" class="form-control" id="pickSpace" value="SWT1AQ">
+                    <label for="pickSpace" class="form-label">Space:</label>
+                    <input type="text" class="form-control" id="pickSpace" value="{{ Current_Space }}">
                   </div>
                 </div>
 
                 <div class="mt-3 d-flex align-items-center gap-3">
-                  <button type="button" class="btn btn-outline-primary px2rem" data-bs-toggle="modal" data-bs-target="#confluenceTreeModal" id="choosePagesBtn">Choose Pages…</button>
+                  <button type="submit" name="action" value="choose_pages" class="btn btn-outline-primary px2rem" data-bs-toggle="modal"
+                    data-bs-target="#confluenceTreeModal" id="choosePagesBtn">Choose Pages…</button>
                   <div class="small text-muted" id="selectedCount">0 selected</div>
                 </div>
 
