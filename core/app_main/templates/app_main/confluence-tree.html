@@ -17,32 +17,34 @@
     .collapse-icon { width: 1.1rem; display:inline-block; text-align:center; cursor:pointer; }
     .node-label { margin-left: .3rem; }
     .selected-count { min-width: 6rem; }
-    .search-highlight { background: yellow; }
+    .search-highlight { background: rgb(255, 144, 64); }
     .tree-node-item { margin-bottom: 0.25rem; }
   </style>
 </head>
 
-<body>
+<body class="bg-light">
 <div class="container py-4">
   <h5>Confluence: Select Pages</h5>
 
-  <div class="mb-3 d-flex gap-2">
-    <input id="treeSearch" class="form-control me-auto" type="search" placeholder="Search title..." />
-    <button id="expandAllBtn" class="btn btn-outline-secondary">Expand all</button>
-    <button id="collapseAllBtn" class="btn btn-outline-secondary">Collapse all</button>
-    <button id="selectAllBtn" class="btn btn-outline-secondary">Select all</button>
+  <div class="mt-4 mb-3 d-flex gap-2">
+    <input id="treeSearch" class="form-control me-auto rounded-3" type="search" placeholder="Search title..." />
+    <button id="expandAllBtn" class="btn btn-outline-secondary text-nowrap">Expand all</button>
+    <button id="collapseAllBtn" class="btn btn-outline-secondary text-nowrap">Collapse all</button>
+    <button id="selectAllBtn" class="btn btn-outline-secondary text-nowrap">Select all</button>
     <button id="clearAllBtn" class="btn btn-outline-secondary">Clear</button>
-    <div class="ms-2 small text-muted selected-count">Selected: <strong id="selectedCount">0</strong></div>
-    <div class="ms-3 small text-muted found-count">Found: <strong id="foundCount">0</strong></div>
   </div>
+
+    <div class="mb-3 small text-muted">
+      <div class="ms-3">Selected: <strong id="selectedCount">0</strong></div>
+      <div class="ms-3">Found: <strong id="foundCount">0</strong></div>
+    </div>
 
   <form method="post" id="treeForm">
     {% csrf_token %}
 
     <input type="hidden" name="selected_nodes" id="selectedNodesInput" value="" />
 
-    <div class="border rounded py-3" id="treeContainer" style="max-height:60vh; overflow:auto; background:#fff;">
-
+    <div class="border rounded-3 py-3" id="treeContainer" style="max-height:60vh; overflow:auto; background:#fff;">
       <div id="treeRoot">Loading...</div>
     </div>
 
