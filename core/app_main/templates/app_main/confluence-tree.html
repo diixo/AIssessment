@@ -23,7 +23,7 @@
 </head>
 
 <body class="bg-light">
-<div class="container py-4">
+<div class="container py-5">
   <h5>Confluence: Select Pages</h5>
 
   <div class="mt-4 mb-3 d-flex gap-2">
@@ -190,9 +190,14 @@
 
     // expand/collapse helpers
     function setAllExpanded(expand) {
-      for (const el of treeRootEl.querySelectorAll('.node-children')) {
-        if (expand) el.classList.remove('d-none'); else el.classList.add('d-none');
+      const uls = treeRootEl.querySelectorAll('.node-children');
+      for (const ul of uls) {
+        // do not touch root ul-element
+        if (ul.parentElement === treeRootEl) continue;
+        if (expand) ul.classList.remove('d-none');
+        else ul.classList.add('d-none');
       }
+
       for (const icon of treeRootEl.querySelectorAll('.collapse-icon')) {
         if (icon.textContent.trim() === '') continue;
         icon.textContent = expand ? '▾' : '▸';
@@ -225,6 +230,7 @@
         // also collapse children if you want, here we keep current expanded/collapsed state
         console.log("Search cleared. Matches: 0");
         updateFoundCount(0);
+        updateSelectedCount();
         return;
       }
 
@@ -277,6 +283,7 @@
 
       console.log(`Search query "${ql}" → matches: ${found_count}`);
       updateFoundCount(found_count);
+      updateSelectedCount();
     }
 
     function escapeRegExp(s) {
@@ -299,6 +306,7 @@
     // initial render
     renderTree();
   })();
+
 </script>
 </body>
 </html>

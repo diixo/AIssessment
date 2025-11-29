@@ -151,7 +151,7 @@ def confluence(request):
             print("ROOT page_id:", body.get("root_page_id"))
             print("NODES COUNT:", len(body.get("nodes", {})))
 
-            if status == 0:
+            if status == 200:
                 return render(request, "app_main/confluence-tree.html", {
                     "tree_json": json.dumps(body)
                 })
