@@ -220,12 +220,24 @@
           const label = li.querySelector('.node-label');
           if (label) label.innerHTML = label.textContent; // remove highlights
         }
-
+        // also collapse children if you want, here we keep current expanded/collapsed state
         console.log("Search cleared. Matches: 0");
         updateFoundCount(0);
         return;
       }
 
+      // First hide everything; we'll unhide matches and their ancestors
+      for (const li of treeRootEl.querySelectorAll('li')) {
+        li.style.display = 'none';
+        const label = li.querySelector('.node-label');
+        if (label) label.innerHTML = label.textContent;
+      }
+      // Also hide all child ULs (so we can reveal only needed branches)
+      for (const ul of treeRootEl.querySelectorAll('.node-children')) {
+        ul.classList.add('d-none');
+      }
+
+      // Now find matches
       for (const li of treeRootEl.querySelectorAll('li')) {
         const label = li.querySelector('.node-label');
         const text = label ? label.textContent.toLowerCase() : '';
@@ -233,22 +245,31 @@
         if (text.includes(ql)) {
           found_count++;
 
-          // highlight
+          // highlight in label
           const orig = label.textContent;
           const re = new RegExp(`(${escapeRegExp(ql)})`, 'ig');
           label.innerHTML = orig.replace(re, '<span class="search-highlight">$1</span>');
 
-          // show this li and its ancestors
+          // show this li
           li.style.display = '';
+
+          // show ancestors: li and their ul containers, and set icon to expanded
           let p = li.parentElement;
           while (p && p !== treeRootEl) {
-            if (p.classList && p.classList.contains('node-children')) p.classList.remove('d-none');
+            // if this is a UL with class node-children — unhide it
+            if (p.classList && p.classList.contains('node-children')) {
+              p.classList.remove('d-none');
+              // also ensure the parent LI (p.parentElement) is visible
+              const parentLi = p.parentElement;
+              if (parentLi && parentLi.tagName === 'LI') parentLi.style.display = '';
+              // set collapse icon in parentLi to '▾' (expanded)
+              if (parentLi) {
+                const icon = parentLi.querySelector('.collapse-icon');
+                if (icon && icon.textContent.trim() !== '') icon.textContent = '▾';
+              }
+            }
             p = p.parentElement;
           }
-        } else {
-          li.style.display = 'none';
-          // reset label if previously changed
-          if (label) label.innerHTML = label.textContent;
         }
       }
 
