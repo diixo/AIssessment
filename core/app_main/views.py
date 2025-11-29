@@ -159,6 +159,10 @@ def confluence(request):
             headingPick = ""
             Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
             print(Current_Space, "action:", action)
+        elif action == "cancel_selected":
+            headingPick = ""
+            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
+            print(Current_Space, "action:", action)
         else:
             print("unknown action...")
 
