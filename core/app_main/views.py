@@ -155,7 +155,10 @@ def confluence(request):
                 return render(request, "app_main/confluence-tree.html", {
                     "tree_json": json.dumps(body)
                 })
-
+        elif action == "save_selected":
+            headingPick = ""
+            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
+            print(Current_Space, "action:", action)
         else:
             print("unknown action...")
 
@@ -174,7 +177,7 @@ def confluence(request):
         "Current_Space": Current_Space,
         "stage_status": stage_status,
         })
-#tree_full space=SWT1AQ root=886960893 nodes=5767 size=548370B
+
 #Save
 #/confluence/selection request space=SWT1AQ include_ids=52 exclude_ids=0
 

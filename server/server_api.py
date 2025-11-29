@@ -7,6 +7,7 @@ import time
 import re
 from collections import deque
 from fastapi import APIRouter, Body, FastAPI, HTTPException, Response, WebSocket, WebSocketDisconnect, Query
+from fastapi.middleware.cors import CORSMiddleware
 from server.searching_server import SearchingServer
 from server.schemas import StrRequestModel, ContentItemModel, DialogueParams, Message
 from server.dialogue import Dialogue_gpt2, Conversation
@@ -23,7 +24,8 @@ from fastapi.responses import JSONResponse
 
 APP_ROOT = Path(__file__).resolve().parent.parent
 CORPUS_ROOT = APP_ROOT / "corpus"
-_CONF_LOG = logging.getLogger("backend.confluence")
+#_CONF_LOG = logging.getLogger("backend.confluence")
+_CONF_LOG = logging.getLogger()
 _ROOT = Path(__file__).resolve().parents[1]
 _SCRIPTS_DIR = _ROOT / "scripts"
 
@@ -40,6 +42,20 @@ from confluence_sync import (
 )  # type: ignore
 
 app = FastAPI()
+
+# Enable CORS for browser-based UIs (Svelte, Django server)
+_origins_env = os.environ.get(
+    "CORS_ALLOW_ORIGINS",
+    "http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:8000,http://localhost:8000",
+)
+_origins = [o.strip() for o in _origins_env.split(',') if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 searching_server_global = SearchingServer()
 
@@ -292,6 +308,7 @@ def confluence_tree_full(space: str) -> Dict[str, Any]:
     try:
         text = tree_path.read_text(encoding="utf-8")
         data = json.loads(text)
+        _CONF_LOG.info(f"tree_full text: {data.keys()}")
         nodes = data.get("nodes") or {}
         _CONF_LOG.info("tree_full space=%s root=%s nodes=%d size=%dB", space, data.get("root_page_id"), len(nodes), len(text.encode('utf-8')))
     except Exception:
@@ -318,6 +335,9 @@ def confluence_history(space: str, cmd: str = "pull", lines: int = 200) -> Dict[
 
 @app.post("/confluence/selection", tags=["confluence"])
 def confluence_selection(req: ConfluenceSelectionRequest) -> Dict[str, Any]:
+    _CONF_LOG.info("/confluence/selection" +
+                   f" request: space={req.space} include_ids={len(req.include_ids)} exclude_ids={len(req.exclude_ids or [])}")
+
     path = CORPUS_ROOT / req.space / ".sync"
     path.mkdir(parents=True, exist_ok=True)
     sel_path = path / "selection.json"
@@ -332,6 +352,8 @@ def confluence_selection(req: ConfluenceSelectionRequest) -> Dict[str, Any]:
 
 @app.get("/confluence/selection", tags=["confluence"])
 def confluence_selection_get(space: str) -> Dict[str, Any]:
+    _CONF_LOG.info("/confluence/selection" + f" request: space={space}")
+
     sel_path = CORPUS_ROOT / space / ".sync" / "selection.json"
     try:
         data = json.loads(sel_path.read_text(encoding="utf-8"))
