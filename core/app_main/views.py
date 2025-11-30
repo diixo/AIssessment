@@ -53,6 +53,7 @@ def confluence(request):
     saved = ""
     Current_Space = ""
     stage_status = ""
+    selected_count = 0
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -158,7 +159,8 @@ def confluence(request):
         elif action == "save_selected":
             headingPick = ""
             Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
-            print(Current_Space, "action:", action)
+            selected_count = int(request.POST.get("selected_count", '0'))
+            print(Current_Space, "action:", action, "selected_count:", selected_count)
         elif action == "cancel_selected":
             headingPick = ""
             Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
@@ -180,6 +182,7 @@ def confluence(request):
         "saved": saved,
         "Current_Space": Current_Space,
         "stage_status": stage_status,
+        "selected_count": selected_count,
         })
 
 #Save
