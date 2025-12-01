@@ -72,10 +72,10 @@
           </div>
         </div>
 
-        <!-- Progress block (показывать только в стадии evaluate) -->
+        <!-- Progress block (show only for evaluate-stage) -->
         <div id="evaluate-status" class="mt-2 d-none">
           <div class="progress">
-            <!-- progress-bar role и aria полезны для доступности -->
+            <!-- progress-bar role and aria are usefull for accessability -->
             <div id="confluence-progressbar" class="progress-bar progress-bar-striped" role="progressbar"
                 style="width: 0%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <!-- можно показать % внутри полосы, но не обязательно -->
@@ -85,7 +85,7 @@
             0/0 · Elapsed 0s
           </div>
         </div>
-        <!-- Опционально: индикатор других стадий -->
+        <!-- Optionally: indicator of another stages -->
         <div id="confluence-stage-text" class="small text-muted mt-1">Stage: idle</div>
 
         <div class="small text-muted">Stage: <strong class="text-body">{{stage_status}}</strong> · Pages: 0 Added: 0 Changed: 0 Deleted: 0</div>
@@ -190,7 +190,7 @@
 
           <div class="border bg-light p-2 mb-2" style="max-height:40vh; overflow-y:auto;" role="tree" aria-multiselectable="true">
             <div class="small text-muted">No children under space home.</div>
-            <!-- Здесь можно динамически вставлять дерево страниц -->
+            <!-- Here we can insert three of pages -->
           </div>
 
           <div class="border p-2 bg-light" style="min-height:6rem;">
@@ -260,14 +260,14 @@ function updateUI() {
   const progressText = document.getElementById('confluence-progress-text');
   const stageText = document.getElementById('confluence-stage-text');
 
-  // Показываем/скрываем evaluate секцию
+  // Show/hide evaluate section
   if (stage === 'evaluate') {
     evaluateBlock.classList.remove('d-none');
   } else {
     evaluateBlock.classList.add('d-none');
   }
 
-  // Обновляем прогрессбар
+  // Update progress bar and texts
   const total = (progress && Number.isFinite(progress.total) && progress.total > 0) ? progress.total : 1;
   const done = (progress && Number.isFinite(progress.done)) ? progress.done : 0;
   const pct = Math.min(100, Math.round((done / total) * 100));
@@ -276,7 +276,7 @@ function updateUI() {
     progressBar.style.width = `${pct}%`;
     progressBar.setAttribute('aria-valuenow', String(pct));
     progressBar.setAttribute('aria-valuemax', String(100));
-    // при желании можно показывать число %-в внутри полосы:
+
     progressBar.textContent = `${pct}%`;
   }
 
@@ -331,7 +331,6 @@ async function pollStatus() {
     pollTimer = null;
   }
   pollTimer = setTimeout(() => {
-    // Небольшая защита: убедимся, что элемент всё ещё на странице
     if (document.getElementById('evaluate-status')) {
       console.log('[pollStatus] scheduling next poll at', new Date().toISOString());
       pollStatus();
@@ -350,13 +349,16 @@ async function pollStatus() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Если evaluate-status изначально не на странице, не начинаем
+
   if (document.getElementById('evaluate-status')) {
     pollStatus();
-  } else {
+  }
+  else {
     console.log('Not starting polling — evaluate-status not present on load.');
   }
-  window.addEventListener('beforeunload', () => { if (pollTimer) clearTimeout(pollTimer); });
+  window.addEventListener('beforeunload', () => {
+    if (pollTimer) clearTimeout(pollTimer);
+  });
 });
 
 </script>

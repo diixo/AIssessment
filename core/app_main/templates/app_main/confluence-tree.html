@@ -34,7 +34,6 @@
 
 <div class="py-4">
   <h5>Confluence: Select Pages</h5>
-
   <div class="mt-4 mb-3 d-flex gap-2">
     <input id="treeSearch" class="form-control me-auto rounded-3" type="search" placeholder="Search title..." />
     <button id="expandAllBtn" class="btn btn-outline-secondary text-nowrap">Expand all</button>
@@ -42,7 +41,6 @@
     <button id="selectAllBtn" class="btn btn-outline-secondary text-nowrap">Select all</button>
     <button id="clearAllBtn" class="btn btn-outline-secondary">Clear</button>
   </div>
-
 
 
   <form method="post" id="treeForm">
@@ -75,7 +73,8 @@
 
   window.TREE_DATA = {{ tree_json|safe }};
 
-  async function selection(space, includeIds, excludeIds = []) {
+  async function selection(space, includeIds, excludeIds = [])
+  {
     const res = await fetch('http://127.0.0.1:8001/confluence/selection', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -190,14 +189,12 @@
     }
 
     function updateSelectedCount() {
-      //selectedCountEl.textContent = selected.size;
       selectedCountEl.value = selected.size;
       selectedNodesInput.value = Array.from(selected).join(',');
     }
 
     function updateFoundCount(n) {
       foundCountEl.textContent = n;
-      //foundCountEl.value = n;
     }
 
     // build entire tree (starting from root). If no explicit root, build all top-level nodes.
