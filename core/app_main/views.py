@@ -45,36 +45,22 @@ def chat_view(request):
 def confluence(request):
     headingBackend = "collapse"
     headingEval = "collapse"
+    headingStatus = "collapse"
     headingPick = "collapse"
     headingPull = "collapse"
     headingBuild = "collapse"
     tested = ""
     saved = ""
     Current_Space = ""
-    stage_status = "idle"
+    stage = "idle"
     selected_count = 0
 
-    ##################################################################
-    if Current_Space.strip() != "":
-        # get response
-        response, status = async_to_sync(make_get_request)(
-            url="http://127.0.0.1:8001/confluence/status",
-            params={"space": Current_Space}
-            )
-        response = json.loads(response)
-        stage_status = response.get("stage")
-        space = response.get("space")
-        plan = response.get("plan")
-        delta = response.get("delta")
-        print(
-            f"space: {space}",
-            f"stage: {stage_status}",
-            f"plan[]: {plan.keys()}",
-            f"delta[]: {delta.keys()}"
-            )
-        print("status_response:", response.keys())
+    phase = ""
+    plan_pages = 0
+    delta_added = 0
+    delta_changed = 0
+    delta_deleted = 0
 
-    ##################################################################
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -128,6 +114,37 @@ def confluence(request):
             body = json.loads(raw_body)
             print(action, status, body)
 
+        elif action == "request_status":
+            headingStatus = ""
+            Current_Space = request.POST.get("evaluate_space_field", "SWT1AQ")
+
+            # get response
+            response, status = async_to_sync(make_get_request)(
+                url="http://127.0.0.1:8001/confluence/status",
+                params={"space": Current_Space}
+                )
+            response = json.loads(response)
+            stage = response.get("stage")
+            phase = response.get("phase", "empty")
+            space = response.get("space")
+            plan = response.get("plan")
+            delta = response.get("delta")
+
+            plan_pages = plan.get("pages", 0)
+            delta_added = len(delta.get("added", []))
+            delta_changed = len(delta.get("changed", []))
+            delta_deleted = len(delta.get("deleted", []))
+
+            print(f"stage: {stage} ({phase}), space={space}")
+            print(f"plan[]: {plan.keys()}")
+            print(f"delta[]: {delta.keys()}")
+
+            progress = response.get("progress", {})
+            print("progress.keys:", progress.keys())
+
+            print("status_response:", response.keys())
+            print(64 * "*")
+
         elif action == "choose_pages":
             headingPick = ""
             Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
@@ -166,14 +183,21 @@ def confluence(request):
         "description": "Confluence",
         "headingBackend": headingBackend,
         "headingEval": headingEval,
+        "headingStatus": headingStatus,
         "headingPick": headingPick,
         "headingPull": headingPull,
         "headingBuild": headingBuild,
         "tested": tested,
         "saved": saved,
         "Current_Space": Current_Space,
-        "stage_status": stage_status,
+        "stage_status": stage,
         "selected_count": selected_count,
+
+        "phase": phase,
+        "plan_pages": plan_pages,
+        "delta_added": delta_added,
+        "delta_changed": delta_changed,
+        "delta_deleted": delta_deleted,
         })
 
 #Save

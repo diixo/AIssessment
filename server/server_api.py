@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Set
 import logging
 from pydantic import BaseModel
 from pathlib import  Path
+from datetime import datetime
 
 import threading
 import uuid as _uuid
@@ -478,7 +479,8 @@ def confluence_activate(req: ConfluenceActivateRequest) -> Dict[str, Any]:
 
 @app.get("/confluence/status", tags=["confluence"])
 def confluence_status(space: str) -> Dict[str, Any]:
-    _CONF_LOG.info("GET: /confluence/status" + f" request: space={space}")
+    timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    _CONF_LOG.info("GET: /confluence/status" + f" request: space={space} {timestamp}")
 
     # Compose status from state/plan + last status file
     sync_dir = CORPUS_ROOT / space / ".sync"
