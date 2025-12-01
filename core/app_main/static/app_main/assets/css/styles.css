@@ -104,6 +104,26 @@ https://code.visualstudio.com/docs/
     --bs-indigo: #6610f2;
     --bs-purple: #6f42c1;
 
+    --bd-purple: #4c0bce;
+    --bd-violet: #712cf9;
+    --bd-violet-rgb: 113, 44, 249;
+    --bd-violet-bg: var(--bd-violet);
+    --base02: #c8c8fa;
+    --base03: #565c64;
+    --base04: #666;
+    --base05: #333;
+    --base06: #fff;
+    --base07: #13795b;
+    --base08: #c6303e;
+    --base09: #087990;
+    --base0A: #6f42c1;
+    --base0B: #084298;
+    --base0C: #084298;
+    --base0D: #6f42c1;
+    --base0E: #ab296a;
+    --base0F: #333;
+
+
     /*--bs-sky: #00a0e4;*/
     --bs-sky: #009ce0;
     --bs-sky-hover: #0080c8;
