@@ -14,7 +14,7 @@
 
 <h5 class="fw-bold mb-4 text-center" style="font-family: 'Public Sans';">Confluence</h5>
 
-<form method="post">
+  <form method="post">
     {% csrf_token %}
 
     <div class="accordion" id="mainAccordion">
@@ -88,7 +88,9 @@
         <!-- Optionally: indicator of another stages -->
         <div id="confluence-stage-text" class="small text-muted mt-1">Stage: idle</div>
 
-        <div class="small text-muted">Stage: <strong class="text-body">{{stage_status}}</strong> · Pages: 0 Added: 0 Changed: 0 Deleted: 0</div>
+        <!-- TODO: evaluate-stage-status -->
+        <div id="evaluate-stage-status-text" 
+          class="small text-muted">Stage: <strong class="text-body">{{stage_status}}</strong> · Pages: 0 Added: 0 Changed: 0 Deleted: 0</div>
 
         <!-- Pick Confluence Documents -->
         <div class="accordion-item">
@@ -160,10 +162,8 @@
             </div>
           </div>
         </div>
-
     </div> <!-- /.accordion -->
-
-</form>
+  </form>
 
 </div>
 
@@ -291,67 +291,93 @@ function updateUI() {
   }
 }
 
-async function pollStatus() {
-  const r = await getStatus(space);
-  stage = r.stage || 'idle';
-  plan = r.plan || {}; delta = r.delta || {};
-  if (selectedCount) {
-    const addCount = (delta.added || []).filter((id) => selectedIds.has(id)).length;
-    const chgCount = (delta.changed || []).filter((id) => selectedIds.has(id)).length;
-    const delCount = (delta.deleted || []).filter((id) => selectedIds.has(id)).length;
-    selectedDelta = { added: addCount, changed: chgCount, deleted: delCount };
-  }
-  progress = r.progress || { total: 0, done: 0 };
-  elapsedSec = typeof r.elapsed_sec === 'number' ? r.elapsed_sec : 0;
-  etaSec = typeof r.eta_sec === 'number' ? r.eta_sec : 0;
-  phase = r.phase || '';
-  const evalDisabled = (!space) || (stage === 'evaluate');
-  if (lastLogged.stage !== stage || lastLogged.done !== progress.done || lastLogged.evalDisabled !== evalDisabled) {
-    clientLog('confluence_progress', {
-      stage, phase, progress, elapsedSec, etaSec,
-      pages: plan?.pages || 0,
-      added: (delta?.added || []).length,
-      changed: (delta?.changed || []).length,
-      deleted: (delta?.deleted || []).length,
-      evaluateDisabled: evalDisabled,
-    });
-    lastLogged = { stage, done: progress.done, evalDisabled };
-  }
-  // Capture a terminal Pull summary if the stage just left 'pull'
-  if (_prevStage === 'pull' && stage !== 'pull' && (progress?.total || 0) > 0) {
-    lastPullSummary = { progress: { ...progress }, elapsedSec: elapsedSec || 0, ts: Date.now() / 1000 };
-    clientLog('apis_panel_pipeline', { action: 'pull_summary', summary: lastPullSummary });
-  }
-  _prevStage = stage;
-  
-  updateUI();
 
+function stopPolling() {
   if (pollTimer) {
     clearTimeout(pollTimer);
     pollTimer = null;
   }
-  pollTimer = setTimeout(() => {
-    if (document.getElementById('evaluate-status')) {
-      console.log('[pollStatus] scheduling next poll at', new Date().toISOString());
-      pollStatus();
+}
+
+
+async function pollStatus() {
+  try {
+    const r = await getStatus(space);
+    stage = r.stage || 'idle';
+    plan = r.plan || {}; delta = r.delta || {};
+    if (selectedCount) {
+      const addCount = (delta.added || []).filter((id) => selectedIds.has(id)).length;
+      const chgCount = (delta.changed || []).filter((id) => selectedIds.has(id)).length;
+      const delCount = (delta.deleted || []).filter((id) => selectedIds.has(id)).length;
+      selectedDelta = { added: addCount, changed: chgCount, deleted: delCount };
     }
-    else {
-      // Если элемент удалён — останавливаем polling
-      console.log('[pollStatus] stopped — evaluate-status not found');
-      if (pollTimer)
-      {
-        clearTimeout(pollTimer);
-        pollTimer = null;
+    progress = r.progress || { total: 0, done: 0 };
+    elapsedSec = typeof r.elapsed_sec === 'number' ? r.elapsed_sec : 0;
+    etaSec = typeof r.eta_sec === 'number' ? r.eta_sec : 0;
+    phase = r.phase || '';
+    const evalDisabled = (!space) || (stage === 'evaluate');
+    if (lastLogged.stage !== stage || lastLogged.done !== progress.done || lastLogged.evalDisabled !== evalDisabled) {
+      clientLog('confluence_progress', {
+        stage, phase, progress, elapsedSec, etaSec,
+        pages: plan?.pages || 0,
+        added: (delta?.added || []).length,
+        changed: (delta?.changed || []).length,
+        deleted: (delta?.deleted || []).length,
+        evaluateDisabled: evalDisabled,
+      });
+      lastLogged = { stage, done: progress.done, evalDisabled };
+    }
+    // Capture a terminal Pull summary if the stage just left 'pull'
+    if (_prevStage === 'pull' && stage !== 'pull' && (progress?.total || 0) > 0) {
+      lastPullSummary = { progress: { ...progress }, elapsedSec: elapsedSec || 0, ts: Date.now() / 1000 };
+      clientLog('apis_panel_pipeline', { action: 'pull_summary', summary: lastPullSummary });
+    }
+    _prevStage = stage;
+
+  } catch (err) {
+
+    console.error('pollStatus error:', err);
+
+  } finally {
+
+    updateUI();
+
+    // Планируем следующий вызов через 500ms после завершения (не setInterval)
+    // Сбрасываем предыдущий таймер, если он есть (на всякий случай)
+    stopPolling();
+
+    // if server returned idle — stop polling
+    // if (stage === 'idle') {
+    //   console.log('[poll] server returned idle — not scheduling next poll');
+    //   return;
+    // }
+
+    pollTimer = setTimeout(() => {
+      if (document.getElementById('evaluate-status')) {
+        console.log('[pollStatus] scheduling next poll at', new Date().toISOString());
+        pollStatus();
       }
-    }
-  }, 500);  // milliseconds
+      else {
+        // Если элемент удалён — останавливаем polling
+        console.log('[pollStatus] stopped — evaluate-status not found');
+        stopPolling();
+      }
+    }, 500);  // milliseconds
+  } // finally
+}
+
+
+function startPolling() {
+  if (pollTimer) return; // уже запущен
+  // Начать немедленно
+  pollStatus();
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
 
   if (document.getElementById('evaluate-status')) {
-    pollStatus();
+    startPolling();
   }
   else {
     console.log('Not starting polling — evaluate-status not present on load.');

@@ -54,6 +54,28 @@ def confluence(request):
     stage_status = "idle"
     selected_count = 0
 
+    ##################################################################
+    if Current_Space.strip() != "":
+        # get response
+        response, status = async_to_sync(make_get_request)(
+            url="http://127.0.0.1:8001/confluence/status",
+            params={"space": Current_Space}
+            )
+        response = json.loads(response)
+        stage_status = response.get("stage")
+        space = response.get("space")
+        plan = response.get("plan")
+        delta = response.get("delta")
+        print(
+            f"space: {space}",
+            f"stage: {stage_status}",
+            f"plan[]: {plan.keys()}",
+            f"delta[]: {delta.keys()}"
+            )
+        print("status_response:", response.keys())
+
+    ##################################################################
+
     if request.method == "POST":
         action = request.POST.get("action")
 
@@ -139,27 +161,6 @@ def confluence(request):
             print("unknown action...")
             print(64 * "*")
 
-    ##################################################################
-    if Current_Space.strip() != "":
-        # get response
-        response, status = async_to_sync(make_get_request)(
-            url="http://127.0.0.1:8001/confluence/status",
-            params={"space": Current_Space}
-            )
-        response = json.loads(response)
-        stage_status = response.get("stage")
-        space = response.get("space")
-        plan = response.get("plan")
-        delta = response.get("delta")
-        print(
-            f"space: {space}",
-            f"stage: {stage_status}",
-            f"plan[]: {plan.keys()}",
-            f"delta[]: {delta.keys()}"
-            )
-        print("status_response:", response.keys())
-
-    ##################################################################
     return render(request, "app_main/confluence.html", context={
         "title": "Confluence settings",
         "description": "Confluence",

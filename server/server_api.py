@@ -478,6 +478,8 @@ def confluence_activate(req: ConfluenceActivateRequest) -> Dict[str, Any]:
 
 @app.get("/confluence/status", tags=["confluence"])
 def confluence_status(space: str) -> Dict[str, Any]:
+    _CONF_LOG.info("GET: /confluence/status" + f" request: space={space}")
+
     # Compose status from state/plan + last status file
     sync_dir = CORPUS_ROOT / space / ".sync"
     plan = {}
