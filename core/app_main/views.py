@@ -117,7 +117,7 @@ def confluence(request):
 
         elif action == "request_status":
             headingStatus = ""
-            Current_Space = request.POST.get("status_space_field", "SWT1AQ")
+            Current_Space = request.POST.get("evaluate_space_field", "SWT1AQ")
 
             # get response
             response, status = async_to_sync(make_get_request)(
