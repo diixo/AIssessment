@@ -4,7 +4,8 @@ __py*
 __pycache__/*
 
 models/*
-secrets/*.json
+#secrets/*.json
+server/models/*
 
 *.py[codz]
 *$py.class
