@@ -70,23 +70,24 @@
                 </div>
             </div>
           </div>
-        </div>
 
-        <!-- Progress block (show only for evaluate-stage) -->
-        <div id="evaluate-status" class="mt-2 d-none">
-          <div class="progress">
-            <!-- progress-bar role and aria are usefull for accessability -->
-            <div id="confluence-progressbar" class="progress-bar progress-bar-striped" role="progressbar"
-                style="width: 0%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-              <!-- можно показать % внутри полосы, но не обязательно -->
+          <!-- Progress block (show only for evaluate-stage) -->
+          <div id="evaluate-status" class="my-2 d-none" style="padding-left: 1.25rem; padding-right:1.25rem;">
+            <div class="progress">
+              <!-- progress-bar role and aria are usefull for accessability -->
+              <div id="confluence-progressbar" class="progress-bar progress-bar-striped" role="progressbar"
+                  style="width: 0%;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <!-- можно показать % внутри полосы, но не обязательно -->
+              </div>
             </div>
-          </div>
-          <div id="confluence-progress-text" class="small text-muted mt-1">
-            0/0 · Elapsed 0s
+            <div id="confluence-progress-text" class="small text-muted mt-1">
+              0/0 · Elapsed 0s
+            </div>
+
+            <!-- Optionally: indicator of another stages -->
+            <div id="confluence-stage-text" class="small mt-1 fw-bold text-primary">Stage: idle</div>
           </div>
         </div>
-        <!-- Optionally: indicator of another stages -->
-        <div id="confluence-stage-text" class="small text-muted mt-1">Stage: idle</div>
 
         <!-- Evaluate threads status -->
         <div class="accordion-item">
@@ -322,6 +323,12 @@ function stopPolling() {
 
 
 async function pollStatus() {
+  if (stage === 'error') {
+    console.log('[stage] error — stopping polling');
+    stopPolling();
+    //updateUI();
+    return;
+  }
   try {
     const r = await getStatus(space);
     stage = r.stage || 'idle';
@@ -390,9 +397,9 @@ async function pollStatus() {
 
 
 function startPolling() {
-  if (!space || space.trim() === "") {
+  if (!space || space.trim() === "" || space === "error") {
     stopPolling();
-    console.log("[poll] Not starting — space is empty");
+    console.log("[poll] Not starting — space undefined");
     return;
   }
 

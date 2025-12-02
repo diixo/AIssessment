@@ -164,7 +164,7 @@ def confluence(request):
 
             if status == 200:
                 return render(request, "app_main/confluence-tree.html", {
-                    "tree_json": json.dumps(body)
+                    "tree_json": json.dumps(body, ensure_ascii=False)
                 })
         elif action == "save_selected":
             headingPick = ""
