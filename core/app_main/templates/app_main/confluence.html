@@ -238,6 +238,7 @@ let phase = '';
 let _prevStage = 'idle';
 let pollTimer;
 let lastLogged = { stage: '', done: -1, evalDisabled: null };
+let selectedCount = 0;
 
 
 async function getStatus(space) {
