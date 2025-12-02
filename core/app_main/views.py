@@ -139,8 +139,9 @@ def confluence(request):
             print(f"plan[]: {plan.keys()}")
             print(f"delta[]: {delta.keys()}")
 
-            progress = response.get("progress", {})
-            print("progress.keys:", progress.keys())
+            progress = response.get("progress")
+            if progress:
+                print(f"progress: total={progress.get('total')} done={progress.get('done')}")
 
             print("status_response:", response.keys())
             print(64 * "*")

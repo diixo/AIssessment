@@ -337,7 +337,8 @@ async function pollStatus() {
     etaSec = typeof r.eta_sec === 'number' ? r.eta_sec : 0;
     phase = r.phase || '';
     const evalDisabled = (!space) || (stage === 'evaluate');
-    if (lastLogged.stage !== stage || lastLogged.done !== progress.done || lastLogged.evalDisabled !== evalDisabled) {
+    if (lastLogged.stage !== stage || lastLogged.done !== progress.done || lastLogged.evalDisabled !== evalDisabled)
+    {
       clientLog('confluence_progress', {
         stage, phase, progress, elapsedSec, etaSec,
         pages: plan?.pages || 0,
@@ -389,8 +390,14 @@ async function pollStatus() {
 
 
 function startPolling() {
-  if (pollTimer) return; // уже запущен
-  // Начать немедленно
+  if (!space || space.trim() === "") {
+    stopPolling();
+    console.log("[poll] Not starting — space is empty");
+    return;
+  }
+
+  if (pollTimer) return; // already runs
+  // start immediately
   pollStatus();
 }
 
