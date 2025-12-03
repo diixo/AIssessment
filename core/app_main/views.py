@@ -53,13 +53,8 @@ def confluence(request):
     saved = ""
     Current_Space = ""
     stage = "idle"
+    phase = "empty"
     selected_count = 0
-
-    phase = ""
-    plan_pages = 0
-    delta_added = 0
-    delta_changed = 0
-    delta_deleted = 0
 
 
     if request.method == "POST":
@@ -130,10 +125,10 @@ def confluence(request):
             plan = response.get("plan")
             delta = response.get("delta")
 
-            plan_pages = plan.get("pages", 0)
-            delta_added = len(delta.get("added", []))
-            delta_changed = len(delta.get("changed", []))
-            delta_deleted = len(delta.get("deleted", []))
+            # plan_pages = plan.get("pages", 0)
+            # delta_added = len(delta.get("added", []))
+            # delta_changed = len(delta.get("changed", []))
+            # delta_deleted = len(delta.get("deleted", []))
 
             print(f"stage: {stage} ({phase}), space={space}")
             print(f"plan[]: {plan.keys()}")
@@ -195,10 +190,6 @@ def confluence(request):
         "selected_count": selected_count,
 
         "phase": phase,
-        "plan_pages": plan_pages,
-        "delta_added": delta_added,
-        "delta_changed": delta_changed,
-        "delta_deleted": delta_deleted,
         })
 
 #Save
