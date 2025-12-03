@@ -106,7 +106,7 @@ class SyncPaths:
     def write_status(self, payload: Dict[str, Any]) -> None:
         try:
             self.status_path.parent.mkdir(parents=True, exist_ok=True)
-            self.status_path.write_text(json.dumps(payload), encoding="utf-8")
+            self.status_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
         except Exception:
             # Best-effort only; UI falls back to idle when unavailable
             pass
@@ -214,8 +214,8 @@ def evaluate(space: str, source_kind: str, source_dir: str) -> Plan:
         "source_path": src.path,
     })
     print(
-        f"Evaluate complete — space={space} kind={source_kind} files={files} pages={pages} "
-        f"eta≈{estimated_seconds}s added={len(added)} changed={len(changed)} deleted={len(deleted)}"
+        f"Evaluate complete: space={space} kind={source_kind} files={files} pages={pages} "
+        f"eta~{estimated_seconds}s added={len(added)} changed={len(changed)} deleted={len(deleted)}"
     )
     return plan
 
@@ -515,7 +515,7 @@ def evaluate_remote(
         "workers": workers,
     })
     print(
-        f"Evaluate complete (remote) — space={space} pages={len(manifest)} eta≈{plan.estimated_seconds}s "
+        f"Evaluate complete (remote): space={space} pages={len(manifest)} eta~{plan.estimated_seconds}s "
         f"added={len(added)} changed={len(changed)} deleted={len(deleted)}"
     )
     # Final status snapshot (backend will flip to idle on thread completion)

@@ -128,7 +128,7 @@ def chunk_confluence_markdown(source_dir: str, output_path: str) -> None:
         file_chunks = _chunk_single_markdown(md_path)
         all_chunks.extend(file_chunks)
 
-    Path(output_path).write_text(json.dumps(all_chunks, indent=2) + "\n", encoding="utf-8")
+    Path(output_path).write_text(json.dumps(all_chunks, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(
         f"Wrote {len(all_chunks)} chunk(s) from {len(list(md_dir.glob('*.md')))} Markdown files to {output_path}"
     )
