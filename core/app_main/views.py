@@ -51,7 +51,7 @@ def confluence(request):
     headingBuild = "collapse"
     tested = ""
     saved = ""
-    Current_Space = ""
+    current_space = ""
     stage = "idle"
     phase = "empty"
     selected_count = 0
@@ -97,11 +97,11 @@ def confluence(request):
 
         elif action == "evaluate":
             headingEval = ""
-            Current_Space = request.POST.get("eval_space_field", "SWT1AQ")
+            current_space = request.POST.get("eval_space_field", "SWT1AQ")
             raw_body, status = async_to_sync(make_post_request)(
                 url="http://127.0.0.1:8001/confluence/evaluate", data=
                 {
-                    "space": Current_Space,
+                    "space": current_space,
                     "root_page_id": "",
                     "workers": 8,
                 },
@@ -111,19 +111,21 @@ def confluence(request):
 
         elif action == "request_status":
             headingStatus = ""
-            Current_Space = request.POST.get("evaluate_space_field", "SWT1AQ")
+            current_space = request.POST.get("evaluate_space_field", "SWT1AQ")
+            if current_space.strip() == "":
+                current_space = "SWT1AQ"
 
             # get response
             response, status = async_to_sync(make_get_request)(
                 url="http://127.0.0.1:8001/confluence/status",
-                params={"space": Current_Space}
+                params={"space": current_space}
                 )
             response = json.loads(response)
             stage = response.get("stage")
             phase = response.get("phase", "empty")
             space = response.get("space")
-            plan = response.get("plan")
-            delta = response.get("delta")
+            plan = response.get("plan", {})
+            delta = response.get("delta", {})
 
             # plan_pages = plan.get("pages", 0)
             # delta_added = len(delta.get("added", []))
@@ -143,12 +145,12 @@ def confluence(request):
 
         elif action == "choose_pages":
             headingPick = ""
-            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
-            print(action, Current_Space)
+            current_space = request.POST.get("pick_space_field", "SWT1AQ")
+            print(action, current_space)
 
             raw_body, status = async_to_sync(make_get_request)(
                 url="http://127.0.0.1:8001/confluence/tree/full",
-                params={"space": Current_Space}
+                params={"space": current_space}
                 )
             body = json.loads(raw_body)
             print("KEYS:", body.keys())
@@ -161,15 +163,17 @@ def confluence(request):
                 return render(request, "app_main/confluence-tree.html", {
                     "tree_json": json.dumps(body, ensure_ascii=False)
                 })
+
         elif action == "save_selected":
             headingPick = ""
-            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
+            current_space = request.POST.get("pick_space_field", "SWT1AQ")
             selected_count = int(request.POST.get("selected_count", '0'))
-            print(Current_Space, "action:", action, "selected_count:", selected_count)
+            print(current_space, "action:", action, "selected_count:", selected_count)
+
         elif action == "cancel_selected":
             headingPick = ""
-            Current_Space = request.POST.get("pick_space_field", "SWT1AQ")
-            print(Current_Space, "action:", action)
+            current_space = request.POST.get("pick_space_field", "SWT1AQ")
+            print(current_space, "action:", action)
         else:
             print("unknown action...")
             print(64 * "*")
@@ -185,7 +189,7 @@ def confluence(request):
         "headingBuild": headingBuild,
         "tested": tested,
         "saved": saved,
-        "Current_Space": Current_Space,
+        "Current_Space": current_space,
         "stage_status": stage,
         "selected_count": selected_count,
 
