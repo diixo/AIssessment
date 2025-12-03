@@ -377,7 +377,7 @@ def _update_status(space: str, stage: str, extra: Dict[str, Any] | None = None) 
         st.update(extra)
     out = APP_ROOT / "logs" / f"confluence_status_{space}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(st), encoding="utf-8")
+    out.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8")
 
 
 def _run_task(space: str, fn, *args, **kwargs) -> None:  # noqa: ANN001
@@ -568,11 +568,14 @@ def confluence_status(space: str) -> Dict[str, Any]:
                 resp["eta_sec"] = max(0.0, float(eta_val))
         except Exception:
             pass
+    _CONF_LOG.info("GET: /confluence/status" + f" << stage={resp.get('stage')}")
     return resp
 
 
 
 if __name__ == "__main__":
+    import sys
+    _CONF_LOG.info("sys: stdout=" + sys.stdout.encoding + " stderr=" + sys.stderr.encoding)
     try:
         uvicorn.run(
             "server_api:app",
