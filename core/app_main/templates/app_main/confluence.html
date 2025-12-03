@@ -83,10 +83,11 @@
             <div id="confluence-progress-text" class="small text-muted mt-1">
               0/0 · Elapsed 0s
             </div>
-
-            <!-- Optionally: indicator of another stages -->
-            <div id="confluence-stage-text" class="small mt-1 fw-bold text-primary">Stage: idle</div>
           </div>
+
+          <!-- Optionally: indicator of another stages -->
+          <div id="confluence-stage-text" class="small mb-2 fw-bold text-primary" style="padding-left: 1.25rem; padding-right:1.25rem;"
+            >Stage: idle</div>
         </div>
 
         <!-- Evaluate threads status -->
@@ -231,7 +232,8 @@
 
 let space = "{{ Current_Space|escapejs }}";
 let stage = 'idle';
-let plan = {}; let delta = {};
+let plan = {};
+let delta = {};
 let progress = { total: 0, done: 0 };
 let elapsedSec = 0;
 let etaSec = 0;
@@ -285,8 +287,10 @@ function updateUI() {
   // Show/hide evaluate section
   if (stage === 'evaluate') {
     evaluateBlock.classList.remove('d-none');
+    console.log('[updateUI] showing evaluate-status block');
   } else {
     evaluateBlock.classList.add('d-none');
+    console.log('[updateUI] hiding evaluate-status block');
   }
 
   // Update progress bar and texts
@@ -306,10 +310,24 @@ function updateUI() {
     let txt = `${done}/${total} · Elapsed ${formatTime(elapsedSec)}`;
     if (etaSec > 0) txt += ` · ETA ${formatTime(etaSec)}`;
     progressText.textContent = txt;
+    console.log(`[updateUI] Progress: ${txt}`);
+  }
+  else {
+    console.warn('updateUI: progressText element not found');
   }
 
   if (stageText) {
-    stageText.textContent = `Stage: ${stage}${phase ? ' · ' + phase : ''}`;
+    let txt = `Stage: ${stage}${phase ? ' · ' + phase : ''}`;
+    console.log(`Stage: ${stage}${phase ? ' · ' + phase : ''}`)
+
+    if (stage === 'idle')
+    {
+      txt = txt + ` (Pages: ${progress.plan_pages || 0} · Added: ${progress.delta_added || 0} · Changed: ${progress.delta_changed || 0} · Deleted: ${progress.delta_deleted || 0})`;
+    }
+    stageText.textContent = txt;
+  }
+  else {
+    console.warn('updateUI: stageText element not found');
   }
 }
 
@@ -340,6 +358,13 @@ async function pollStatus() {
       selectedDelta = { added: addCount, changed: chgCount, deleted: delCount };
     }
     progress = r.progress || { total: 0, done: 0 };
+
+    // For status block (added extra fields)
+    progress.plan_pages = plan.pages || 0;
+    progress.delta_added = (delta.added || []).length;
+    progress.delta_changed = (delta.changed || []).length;
+    progress.delta_deleted = (delta.deleted || []).length;
+
     elapsedSec = typeof r.elapsed_sec === 'number' ? r.elapsed_sec : 0;
     etaSec = typeof r.eta_sec === 'number' ? r.eta_sec : 0;
     phase = r.phase || '';
@@ -376,10 +401,10 @@ async function pollStatus() {
     stopPolling();
 
     // if server returned idle — stop polling
-    // if (stage === 'idle') {
-    //   console.log('[poll] server returned idle — not scheduling next poll');
-    //   return;
-    // }
+    if (stage === 'idle') {
+      console.log('[poll] server returned idle — not scheduling next poll');
+      return;
+    }
 
     pollTimer = setTimeout(() => {
       if (document.getElementById('evaluate-status')) {
@@ -397,7 +422,7 @@ async function pollStatus() {
 
 
 function startPolling() {
-  if (!space || space.trim() === "" || space === "error") {
+  if (!space || space.trim() === "") {
     stopPolling();
     console.log("[poll] Not starting — space undefined");
     return;
