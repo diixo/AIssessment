@@ -42,6 +42,17 @@ def chat_view(request):
         })
 
 
+def resolveRoot(space: str) -> str:
+    raw_body, status = async_to_sync(make_get_request)(
+        url="http://127.0.0.1:8001/confluence/tree",
+        params={"space": space, "root_page_id": ""}
+        )
+    if status != 200:
+        return ""
+    r = json.loads(raw_body)
+    return (r or {}).get("root_page_id", "")
+
+
 def confluence(request):
     headingBackend = "collapse"
     headingEval = "collapse"
@@ -98,11 +109,12 @@ def confluence(request):
         elif action == "evaluate":
             headingEval = ""
             current_space = request.POST.get("eval_space_field", "SWT1AQ")
+            rid = resolveRoot(current_space)
             raw_body, status = async_to_sync(make_post_request)(
                 url="http://127.0.0.1:8001/confluence/evaluate", data=
                 {
                     "space": current_space,
-                    "root_page_id": "",
+                    "root_page_id": rid,
                     "workers": 8,
                 },
             )
