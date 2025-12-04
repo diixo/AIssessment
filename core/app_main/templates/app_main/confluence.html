@@ -319,12 +319,6 @@ function stopPolling() {
 
 
 async function pollStatus() {
-  if (stage === 'error') {
-    console.log('[stage] error — stopping polling');
-    stopPolling();
-    //updateUI();
-    return;
-  }
   try {
     const r = await getStatus(space);
     stage = r.stage || 'idle';
