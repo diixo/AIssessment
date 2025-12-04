@@ -28,8 +28,16 @@ huggingface-hub==0.36.0
 hf_xet==1.2.0
 opencv-python-headless==4.11.0.86
 vllm==0.11.0
+
 triton==3.4.0
 pip install triton-windows==3.4.0.post20
+
 xgrammar==0.1.25
 accelerate==1.10.1
 pydantic_settings==2.12.0
+
+atlassian-python-api==4.0.7
+confluence_sync==0.1.0
+ninja==1.10.2.4
+html2text==2025.4.15
+marker-pdf==1.10.1
