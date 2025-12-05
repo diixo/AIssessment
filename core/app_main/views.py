@@ -53,6 +53,38 @@ def resolveRoot(space: str) -> str:
     return (r or {}).get("root_page_id", "")
 
 
+def create_lazy_tree(body: dict) -> dict:
+    print("KEYS:", body.keys())
+    print(
+        "OK:", body.get("ok", "error"),
+        "ROOT page_id:", body.get("root_page_id", ""),
+        "NODES COUNT:", len(body.get("nodes", {}))
+        )
+    for c in body.get("children", []):
+        print("CHILD:", c["id"], c.get("title", ""))
+
+    children = body.get("children", [])
+    nodes = {
+        # Root node
+        body["root_page_id"]: {
+            "title": "Home",
+            "children": [str(c["id"]) for c in children],
+        }
+    }
+    # Добавляем каждый child как отдельный узел
+    for c in children:
+        cid = str(c["id"])
+        nodes[cid] = {
+            "title": c.get("title", ""),
+            "children": [],  # нижний уровень пустой
+        }
+    return {
+        "ok": body.get("ok"),
+        "root_page_id": body.get("root_page_id"),
+        "nodes": nodes,
+    }
+
+
 def confluence(request):
     headingBackend = "collapse"
     headingEval = "collapse"
@@ -158,6 +190,8 @@ def confluence(request):
         elif action == "choose_pages":
             headingPick = ""
             current_space = request.POST.get("pick_space_field", "SWT1AQ")
+            if current_space.strip() == "":
+                current_space = "SWT1AQ"
             print(action, current_space)
 
             raw_body, status = async_to_sync(make_get_request)(
@@ -166,15 +200,32 @@ def confluence(request):
                 )
             body = json.loads(raw_body)
             print("KEYS:", body.keys())
-            print("STATUS:", status)
-            print("OK:", body["ok"])
-            print("ROOT page_id:", body.get("root_page_id"))
-            print("NODES COUNT:", len(body.get("nodes", {})))
+            print(
+                "STATUS:", status,
+                "OK:", body.get("ok", "error"),
+                "ROOT page_id:", body.get("root_page_id", ""),
+                "NODES COUNT:", len(body.get("nodes", {}))
+                )
 
             if status == 200:
                 return render(request, "app_main/confluence-tree.html", {
-                    "tree_json": json.dumps(body, ensure_ascii=False)
+                    "tree_json": json.dumps(body, ensure_ascii=False),
+                    "current_space": current_space,
                 })
+            else:
+                print("### Fallback to lazy loading of root children")
+                raw_body, status = async_to_sync(make_get_request)(
+                    url="http://127.0.0.1:8001/confluence/tree",
+                    params={"space": current_space}
+                    )
+                if status == 200:
+                    body = json.loads(raw_body)
+                    print("KEYS:", body.keys())
+                    result = create_lazy_tree(body)
+                    return render(request, "app_main/confluence-tree.html", {
+                        "tree_json": json.dumps(result, ensure_ascii=False),
+                        "current_space": current_space,
+                    })
 
         elif action == "save_selected":
             headingPick = ""
