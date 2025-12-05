@@ -68,10 +68,57 @@
   </form>
 </div>
 
-
 <script>
 
+  function clientLog(tag, payload = {}) {
+    try {
+      const body = { ...payload, ts: Date.now() / 1000 };
+      console.log('[client-log]', tag, body);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('[client-log] failed', tag, e);
+    }
+  }
+
+  function formatTime(sec) {
+    if (!sec || sec <= 0) return '0s';
+    const s = Math.floor(sec % 60);
+    const m = Math.floor(sec / 60);
+    if (m > 0) {
+      return `${m}m ${s}s`;
+    }
+    return `${s}s`;
+  }
+
   window.TREE_DATA = {{ tree_json|safe }};
+
+  let Current_Space = "{{ current_space|default:'SWT1AQ' }}";
+
+  async function loadRoot(space) {
+    let errorMsg = '';
+    try {
+      // Try full cached tree first
+      clientLog('apis_panel_picker', { action: 'load_root_full_attempt', space });
+      const resFull = await fetch(`http://127.0.0.1:8001/confluence/tree/full?space=${encodeURIComponent(space)}`, {
+        method: "GET"
+      });
+      clientLog('apis_panel_picker', { action: 'load_root_full_response', status: resFull.status, ok: resFull.ok });
+      if (resFull.ok) {
+        const body = await resFull.json();
+        if (body && body.ok) {
+          clientLog('apis_panel_picker: ok', {
+            rootId: String(body.root_page_id || ''),
+            length: Object.keys(body.nodes || {}).length
+          });
+          return body;
+        }
+      }
+    } catch (e) {
+      errorMsg = e?.message || String(e || 'network error');
+      clientLog('apis_panel_picker', { action: 'load_root_error', error: errorMsg });
+    }
+    return { root_page_id: '', nodes: {} };
+  }
 
   async function selection(space, includeIds, excludeIds = [])
   {
@@ -95,6 +142,14 @@
     const data = window.TREE_DATA || {};
     const nodes = data.nodes || {};
     const rootId = data.root_page_id;
+
+    if (Object.keys(nodes).length === 0) {
+      console.warn('TREE_DATA has no nodes, rootId=', rootId);
+      return;
+    }
+    else {
+      console.log('TREE_DATA loaded, rootId=', rootId, 'nodes count=', Object.keys(nodes).length);
+    }
 
     const treeRootEl = document.getElementById('treeRoot');
     const selectedCountEl = document.getElementById('selectedCount');
@@ -329,26 +384,25 @@
     });
 
     document.getElementById('btnSaveSelected').addEventListener('click', async () => {
+      const includeIds = Array.from(selected);
+      const space = "{{ space }}" || "SWT1AQ";
+      const excludeIds = [];
 
-        const includeIds = Array.from(selected);
-        const space = "{{ space }}" || "SWT1AQ";
-        const excludeIds = [];
+      if (includeIds.length === 0) {
+        alert("Nothing selected.");
+        return;
+      }
 
-        if (includeIds.length === 0) {
-          alert("Nothing selected.");
-          return;
-        }
+      try {
+        const result = await selection(space, includeIds, excludeIds);
 
-        try {
-          const result = await selection(space, includeIds, excludeIds);
+        console.log("Saved:", result);
+        alert("Saved! OK = " + result.ok);
 
-          console.log("Saved:", result);
-          alert("Saved! OK = " + result.ok);
-
-        } catch (err) {
-          console.error("Save failed", err);
-          alert("Error: " + err.message);
-        }
+      } catch (err) {
+        console.error("Save failed", err);
+        alert("Error: " + err.message);
+      }
     });
 
     treeSearch.addEventListener('input', (e) => {
