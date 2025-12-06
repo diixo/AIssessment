@@ -262,6 +262,8 @@ def confluence_pat_save(req: ConfluencePatSaveRequest) -> Dict[str, Any]:
 
 @app.get("/confluence/tree", tags=["confluence"])
 def confluence_tree(root_page_id: str | None = None, space: str | None = None, limit: int = 200) -> Dict[str, Any]:
+    _CONF_LOG.info(f"GET /confluence/tree space: {space}")
+
     saved = _load_saved_pat()
     if not saved:
         raise HTTPException(status_code=400, detail="PAT not configured")
@@ -304,6 +306,8 @@ def confluence_tree(root_page_id: str | None = None, space: str | None = None, l
 
 @app.get("/confluence/tree/full", tags=["confluence"])
 def confluence_tree_full(space: str) -> Dict[str, Any]:
+    _CONF_LOG.info(f"GET /confluence/tree/full space: {space}")
+
     sync_dir = CORPUS_ROOT / space / ".sync"
     tree_path = sync_dir / "tree.json"
     try:
