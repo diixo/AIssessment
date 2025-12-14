@@ -7,6 +7,8 @@ models/*
 #secrets/*.json
 server/models/*
 
+corpus/
+
 *.py[codz]
 *$py.class
 
